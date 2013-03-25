@@ -1,0 +1,1 @@
+var MNKY = window.MNKY || {};
