@@ -19,7 +19,7 @@
 
         github: function () {
             $('.header').addClass('not-index');
-            var view = new MNKY.GithubPageView();
+            var view = new MNKY.GHE.IndexPageView();
         },
         
         labs: function (lab) {
