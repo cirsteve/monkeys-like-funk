@@ -1,3 +1,3 @@
-MNKY.routerInstance = new MNKY.MonkeysRouter();
+MNKY.router = new MNKY.MonkeysRouter();
 
 Backbone.history.start();
