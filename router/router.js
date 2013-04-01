@@ -43,6 +43,9 @@
                 case 'algo-viz':
                     new DVZ.IndexPageView();
                     break;
+                case 'd3':
+                    new MNKY.DThreePageView();
+                    break;
                 case 'places':
                     new PLCE.IndexPageView();
                     break;
