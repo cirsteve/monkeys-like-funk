@@ -12,6 +12,41 @@
             };
         },
 
+        initialize: function () {
+            __super__.initialize.apply(this, arguments);
+
+            this.loadIcon();
+            $(".main").on("mouseover","*", _.bind(this.sizeIcon, this));
+            return this;
+        },
+
+        loadIcon: function () {
+            d3.xml("/static/css/images/monkey.svg", "image/svg+xml", _.bind(this.renderIcon, this));
+        },
+
+        renderIcon: function (xml) {
+            document.getElementById("monkey-target").appendChild(xml.documentElement);
+
+            this.svg = d3.select("#monkey-target").selectAll("svg");
+
+        },
+
+        sizeIcon: function (e) {
+            e.stopPropagation();
+            var height = $(document).height(),
+                width = $(document).width(),
+                pageX = e.pageX,
+                pageY = e.pageY - 60,
+                half = 285,
+                calcY = Math.abs(half - pageY),
+                s = d3.scale.linear().domain([0,280]).range([100,300]); 
+            console.log(e, e.pageX, e.pageY, height, width);
+
+            this.svg.transition().duration(200)
+                .attr("height", s(calcY))
+                .attr("width", s(calcY));
+        },
+
         loadPage: function (e) {
             var page = $(e.target).attr("id");
             MNKY.router.navigate(page, {trigger:true});

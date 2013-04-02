@@ -5,14 +5,15 @@
         template: MNKY.TMPL.monkeys_dthree,
         
         events: {
-            'click #stop-bar': 'stopBarChart'
+            'click #stop-bar': 'stopBarChart',
+            'click #stop-zoom': 'stopZoom'
         },
 
         initialize: function () {
             __super__.initialize.call(this, arguments);
             this.renderBarChart();
             this.getGDPData();
-            this.renderMap();
+            this.getMapData();
         },
 
         render: function () {
@@ -130,7 +131,11 @@
 
         },
 
-        renderMap: function () {
+        stopZoom: function () {
+                clearInterval(this.zoom);
+        }, 
+
+        renderZoomMap: function (world) {
             var width = 450,
                 height = 200,
                 graticule = d3.geo.graticule(),
@@ -140,29 +145,77 @@
                                 .precision(.1),
                 path = d3.geo.path()
                             .projection(projection),
-                svg = d3.select("#map-target").append("svg")
+                svg = d3.select("#zoom-d3map-target").append("svg")
                         .attr("width", width)
                         .attr("height", height);
 
-                svg.append("path")
-                    .datum(graticule)
-                    .attr("class", "graticule")
-                    .attr("d", path);
+            svg.append("path")
+                .datum(graticule)
+                .attr("class", "graticule")
+                .attr("d", path);
+            svg.insert("path", ".graticule")
+                .datum(topojson.object(world, world.objects.land))
+                .attr("class", "land")
+                .attr("d", path);
 
-                d3.json("/static/world-50m.json", function(error, world) {
-                      svg.insert("path", ".graticule")
-                          .datum(topojson.object(world, world.objects.land))
-                          .attr("class", "land")
-                          .attr("d", path);
+            svg.insert("path", ".graticule")
+                .datum(topojson.mesh(world, world.objects.countries, function(a, b) { return a !== b; }))
+                .attr("class", "boundary")
+                .attr("d", path);
 
-                        svg.insert("path", ".graticule")
-                          .datum(topojson.mesh(world, world.objects.countries, function(a, b) { return a !== b; }))
-                          .attr("class", "boundary")
-                          .attr("d", path);
-                });
+            var currentScale = 75;
+            this.zoom = setInterval(function(){
+                currentScale = (currentScale + 1) % 350
+                 projection.scale(currentScale);
+              svg.selectAll(".land")
+                      .attr("d", path);
+            },100);
+            
+        },
+
+        renderMap: function (error, world) {
+            var width = 450,
+                height = 200,
+                graticule = d3.geo.graticule(),
+                projection = d3.geo.equirectangular()
+                                .scale(75)
+                                .translate([width / 2, height / 2])
+                                .precision(.1),
+                path = d3.geo.path()
+                            .projection(projection),
+                svg = d3.select("#d3map-target").append("svg")
+                        .attr("width", width)
+                        .attr("height", height);
+
+            svg.append("path")
+                .datum(graticule)
+                .attr("class", "graticule")
+                .attr("d", path);
+
+            svg.insert("path", ".graticule")
+                .datum(topojson.object(world, world.objects.land))
+                .attr("class", "land")
+                .attr("d", path);
+
+            svg.insert("path", ".graticule")
+              .datum(topojson.mesh(world, world.objects.countries, function(a, b) { return a !== b; }))
+              .attr("class", "boundary")
+              .attr("d", path);
+            
+            this.renderZoomMap(world);
+        },
+
+        getMapData: function () {
+
+            d3.json("/static/world-50m.json", _.bind(this.renderMap, this));
         },
 
         stopBarChart: function () {
+            console.log('ddd');
+            clearInterval(this.run);
+        },
+
+        startBarChart: function () {
             console.log('ddd');
             clearInterval(this.run);
         },
@@ -177,11 +230,11 @@
                         };
                 },
                 data = d3.range(23).map(next);
-            this.run = setInterval(function() {
-                    data.shift();
-                    data.push(next());
-                    redraw();
-                }, 1500);
+            //this.run = setInterval(function() {
+            //        data.shift();
+            //        data.push(next());
+            //        redraw();
+            //    }, 1500);
 
             var w = 15,
                 h = 80,
