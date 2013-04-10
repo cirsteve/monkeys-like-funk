@@ -44,7 +44,7 @@
                     new DVZ.IndexPageView();
                     break;
                 case 'd3':
-                    new MNKY.DThreePageView();
+                    new DDB.PageView();
                     break;
                 case 'places':
                     new PLCE.IndexPageView();

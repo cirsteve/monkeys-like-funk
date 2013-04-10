@@ -4,7 +4,7 @@
     MNKY.DThreePageView = MNKY.PageView.extend({
         template: MNKY.TMPL.monkeys_dthree,
         
-        events: {
+       events: {
             'click #stop-bar': 'stopBarChart',
             'click #stop-zoom': 'stopZoom'
         },

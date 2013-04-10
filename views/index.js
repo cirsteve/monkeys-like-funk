@@ -7,6 +7,7 @@
         events: function () {
             return {
                 "click .index-nav li": "loadPage",
+                "mouseover": "sizeIcon",
                 "mouseenter .index-nav li": "showBlurb",
                 "mouseleave .index-nav li": "hideBlurb"
             };
@@ -16,7 +17,6 @@
             __super__.initialize.apply(this, arguments);
 
             this.loadIcon();
-            $(".main").on("mouseover","*", _.bind(this.sizeIcon, this));
             return this;
         },
 
@@ -39,7 +39,7 @@
                 pageY = e.pageY - 60,
                 half = 285,
                 calcY = Math.abs(half - pageY),
-                s = d3.scale.linear().domain([0,280]).range([100,300]); 
+                s = d3.scale.linear().domain([0,280]).range([100,400]); 
             console.log(e, e.pageX, e.pageY, height, width);
 
             this.svg.transition().duration(200)
